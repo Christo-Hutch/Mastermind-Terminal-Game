@@ -1,11 +1,30 @@
+import json
+from random import choice
+from pathlib import Path
+
 class Board:
     def __init__(self, numberOfRows: int):
         self.numberOfRows = numberOfRows
         self.currentRowNum = 0
         self.board = [['' for _ in range(4)] for _ in range(self.numberOfRows)]
-    
+        self.codeMakerCode = []
+        self.colours = Game.getSettingsData("colours")
+
     def __str__(self):
         return "\n".join([str(row) for row in self.board])
+
+    def clearBoard(self):
+        self.currentRowNum = 0
+        self.board = [['' for _ in range(4)] for _ in range(self.numberOfRows)]
+
+    def refreshColours(self):
+        self.colours = Game.getSettingsData("colours")
+
+    def isBoardFull(self):
+        return self.currentRowNum == self.numberOfRows
+    
+    def isBoardEmpty(self):
+        return self.currentRowNum == 0
     
     def getCurrentRow(self):
         try:
@@ -24,16 +43,6 @@ class Board:
         
         except IndexError as e:
             print(f"ERROR IN 'getPreviousRow': {e}\n")
-
-    def clearBoard(self):
-        self.currentRowNum = 0
-        self.board = [['' for _ in range(4)] for _ in range(self.numberOfRows)]
-
-    def isBoardFull(self):
-        return self.currentRowNum == self.numberOfRows
-    
-    def isBoardEmpty(self):
-        return self.currentRowNum == 0
     
     def changeCurrentRow(self, rowValues: list):
         try:
@@ -43,6 +52,9 @@ class Board:
         except IndexError as e:
             print(f"ERROR IN 'changeCurrentRow': {e}\nFIX: Setting 'self.currentRowNum' to 0\n")
             self.currentRowNum = 0
+
+    def setRandomCode(self):
+        self.codeMakerCode = [choice(list(self.colours.keys())) for _ in range(4)]
     
     """
     This static method takes two lists: the player's submitted colours and
@@ -90,3 +102,34 @@ class Round:
 class Game:
     def __init__(self):
         pass
+    
+    @staticmethod
+    def initialiseGame():
+        Game.setDefaultSettings()
+
+    @staticmethod
+    def setDefaultSettings():
+        defaultColours = {'r': "red",
+                          'b': "blue",
+                          'y': "yellow",
+                          'w': "white",
+                          'p': "purple",
+                          'o': "orange"}
+        
+        defaultRowNum = 10
+        
+        defaultSettings =  {"colours": defaultColours,
+                            "defaultRowQuantity": defaultRowNum}
+        
+        dataFolderPath = Path("data/logs")
+        dataFolderPath.mkdir(parents=True, exist_ok=True)
+
+        with open("data/settings.json", "w") as f:
+            json.dump(defaultSettings, f, indent=4)
+
+    @staticmethod
+    def getSettingsData(setting: str):
+        with open("data/settings.json", "r") as f:
+            Settingsdata = json.load(f)
+
+        return Settingsdata[setting]
