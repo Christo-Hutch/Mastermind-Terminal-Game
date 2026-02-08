@@ -88,17 +88,6 @@ class Board:
         except Exception as e:
             print(f"ERROR IN 'compareRow': {e}\n")
 
-
-class Player:
-    def __init__(self):
-        pass
-
-
-class Round:
-    def __init__(self):
-        pass
-
-
 class Game:
     def __init__(self):
         pass
@@ -121,7 +110,7 @@ class Game:
         defaultSettings =  {"colours": defaultColours,
                             "defaultRowQuantity": defaultRowNum}
         
-        dataFolderPath = Path("data/logs")
+        dataFolderPath = Path("data")
         dataFolderPath.mkdir(parents=True, exist_ok=True)
 
         with open("data/settings.json", "w") as f:
