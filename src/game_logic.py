@@ -3,40 +3,40 @@ from random import choice
 from pathlib import Path
 
 class Board:
-    def __init__(self, numberOfRows: int):
-        self.numberOfRows = numberOfRows
-        self.currentRowNum = 0
-        self.board = [['' for _ in range(4)] for _ in range(self.numberOfRows)]
-        self.codeMakerCode = []
+    def __init__(self, number_of_rows: int):
+        self.number_of_rows = number_of_rows
+        self.current_row_num = 0
+        self.board = [['' for _ in range(4)] for _ in range(self.number_of_rows)]
+        self.code_maker_code = []
         self.colours = Game.getSettingsData("colours")
 
     def __str__(self):
         return "\n".join([str(row) for row in self.board])
 
     def clearBoard(self):
-        self.currentRowNum = 0
-        self.board = [['' for _ in range(4)] for _ in range(self.numberOfRows)]
+        self.current_row_num = 0
+        self.board = [['' for _ in range(4)] for _ in range(self.number_of_rows)]
 
     def refreshColours(self):
         self.colours = Game.getSettingsData("colours")
 
     def isBoardFull(self):
-        return self.currentRowNum == self.numberOfRows
+        return self.current_row_num == self.number_of_rows
     
     def isBoardEmpty(self):
-        return self.currentRowNum == 0
+        return self.current_row_num == 0
     
     def getCurrentRow(self):
         try:
-            return self.board[self.currentRowNum]
+            return self.board[self.current_row_num]
         
         except IndexError as e:
             print(f"ERROR IN 'getCurrentRow': {e}\n")
 
     def getPreviousRow(self):
         try:
-            if self.currentRow > 0:
-                return self.board[self.currentRowNum - 1]
+            if self.current_row_num > 0:
+                return self.board[self.current_row_num - 1]
             
             else:
                 print(f"ERROR IN 'getPreviousRow': Can't get previous row when on first row!\n")
@@ -44,17 +44,17 @@ class Board:
         except IndexError as e:
             print(f"ERROR IN 'getPreviousRow': {e}\n")
     
-    def changeCurrentRow(self, rowValues: list):
+    def changeCurrentRow(self, row_values: list):
         try:
-            self.board[self.currentRowNum] = rowValues
-            self.currentRowNum += 1
+            self.board[self.current_row_num] = row_values
+            self.current_row_num += 1
         
         except IndexError as e:
-            print(f"ERROR IN 'changeCurrentRow': {e}\nFIX: Setting 'self.currentRowNum' to 0\n")
-            self.currentRowNum = 0
+            print(f"ERROR IN 'changeCurrentRow': {e}\nFIX: Setting 'self.current_row_num' to 0\n")
+            self.current_row_num = 0
 
     def setRandomCode(self):
-        self.codeMakerCode = [choice(list(self.colours.keys())) for _ in range(4)]
+        self.code_maker_code = [choice(list(self.colours.keys())) for _ in range(4)]
     
     """
     This static method takes two lists: the player's submitted colours and
@@ -66,21 +66,21 @@ class Board:
     present, nothing (represented by None) is added to the response.
     """
     @staticmethod
-    def compareRow(playerColours: list, targetColours: list):
+    def compareRow(player_colours: list, target_colours: list):
         try:
-            p = playerColours[0:]
-            t = targetColours[0:]
+            p_list = player_colours[0:]
+            t_list = target_colours[0:]
             response = []
 
-            for i in range(len(p)):
-                if p[i] == t[i]:
+            for i in range(len(p_list)):
+                if p_list[i] == t_list[i]:
                     response.append('b')
-                    p[i] = t[i] = None
+                    p_list[i] = t_list[i] = None
         
-            for i in range(len(p)):
-                if p[i] is not None and p[i] in t:
+            for i in range(len(p_list)):
+                if p_list[i] is not None and p_list[i] in t_list:
                     response.append('w')
-                    t[t.index(p[i])] = None
+                    t_list[t_list.index(p_list[i])] = None
 
             # Sorted to keep response vague
             return sorted(response)
@@ -98,27 +98,27 @@ class Game:
 
     @staticmethod
     def setDefaultSettings():
-        defaultColours = {'r': "red",
-                          'b': "blue",
-                          'y': "yellow",
-                          'w': "white",
-                          'p': "purple",
-                          'o': "orange"}
+        default_colours = {'r': "red",
+                           'b': "blue",
+                           'y': "yellow",
+                           'w': "white",
+                           'p': "purple",
+                           'o': "orange"}
         
-        defaultRowNum = 10
+        default_row_num = 10
         
-        defaultSettings =  {"colours": defaultColours,
-                            "defaultRowQuantity": defaultRowNum}
+        default_settings =  {"colours": default_colours,
+                             "defaultRowQuantity": default_row_num}
         
-        dataFolderPath = Path("data")
-        dataFolderPath.mkdir(parents=True, exist_ok=True)
+        data_folder_path = Path("data")
+        data_folder_path.mkdir(parents=True, exist_ok=True)
 
         with open("data/settings.json", "w") as f:
-            json.dump(defaultSettings, f, indent=4)
+            json.dump(default_settings, f, indent=4)
 
     @staticmethod
     def getSettingsData(setting: str):
         with open("data/settings.json", "r") as f:
-            Settingsdata = json.load(f)
+            settings_data = json.load(f)
 
-        return Settingsdata[setting]
+        return settings_data[setting]
